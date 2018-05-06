@@ -1,4 +1,4 @@
-package com.llx278.exeventbus
+package com.llx278.exeventbus.execute
 
 /**
  * 声明了订阅事件被执行时在哪个线程运行
