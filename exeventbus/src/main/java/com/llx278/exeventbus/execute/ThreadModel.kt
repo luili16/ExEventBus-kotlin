@@ -17,7 +17,11 @@ enum class ThreadModel(val threadName:String) {
     /**
      * 在一个自定义的线程中执行
      */
-    POOL("pool");
+    POOL("pool"),
+    /**
+     * 在handlerThread线程中执行
+     */
+    HANDLER("handler");
 
     val mThreadName: String = threadName
 }

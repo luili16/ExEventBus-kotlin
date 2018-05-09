@@ -1,6 +1,7 @@
 package com.llx278.exeventbus
 
 import android.util.Log
+import com.llx278.exeventbus.execute.Executor
 import java.lang.ref.WeakReference
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -80,10 +81,24 @@ class EventBus {
      * 向EventBus上发布一个事件，eventObj,tag,returnType和remote唯一标志了Event,所有匹配订阅事件的订阅方法
      * 都会被执行。
      */
-    fun publish(eventObj: Any, tag: String,returnType : String = "kotlin.Unit",remote : Boolean = false): Any {
-
-
-
-        return 1
+    fun publish(eventObj: Any, tag: String,returnType : String = "kotlin.Unit",remote : Boolean = false): Any? {
+        val paramType = eventObj::class.qualifiedName
+        val event = Event(paramType,tag,returnType,remote)
+        val subscriptionList = subscribedMap[event]
+        if (subscriptionList != null) {
+            subscriptionList.forEach {
+                val executor = Executor.creator(it.threadModel)
+                val subscribe = it.subscribeRef.get()
+                if (subscribe != null) {
+                    if (it.type == Type.BLOCK_RETURN) {
+                        // 因为返回值只能有一个，所以默认只是第一个注册的有效
+                        return executor.submit(it.kFunc,eventObj,subscribe)
+                    } else if(it.type == Type.DEFAULT) {
+                        executor.execute(it.kFunc,eventObj,subscribe)
+                    }
+                }
+            }
+        }
+        return null
     }
 }

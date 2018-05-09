@@ -1,7 +1,5 @@
 package com.llx278.exeventbus.execute
 
-import android.util.Log
-import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.CountDownLatch
 import kotlin.reflect.KFunction
 

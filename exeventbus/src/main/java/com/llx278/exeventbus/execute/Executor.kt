@@ -1,6 +1,5 @@
 package com.llx278.exeventbus.execute
 
-import android.support.annotation.MainThread
 import kotlin.reflect.KFunction
 
 interface Executor {
@@ -10,6 +9,7 @@ interface Executor {
                 ThreadModel.MAIN -> MainExecutor
                 ThreadModel.POST -> PostExecutor
                 ThreadModel.POOL -> PoolExecutor
+                ThreadModel.HANDLER -> HandlerExecutor
             }
         }
     }
