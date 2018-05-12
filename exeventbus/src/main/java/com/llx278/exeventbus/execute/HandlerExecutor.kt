@@ -15,13 +15,17 @@ object HandlerExecutor : Executor {
         handler = Handler(handlerThread.looper)
     }
 
-    override fun execute(kFunction: KFunction<*>, paramObj: Any, obj: Any) {
+    override fun execute(kFunction: KFunction<*>, paramObj: Any?, obj: Any) {
         handler.post {
-            kFunction.call(obj,paramObj)
+            if (paramObj == null) {
+                kFunction.call(obj)
+            } else {
+                kFunction.call(obj,paramObj)
+            }
         }
     }
 
-    override fun submit(kFunction: KFunction<*>, paramObj: Any, obj: Any): Any? {
+    override fun submit(kFunction: KFunction<*>, paramObj: Any?, obj: Any): Any? {
 
         val doneSignal = CountDownLatch(1)
         val runner = SyncRunner(doneSignal,kFunction,paramObj,obj)

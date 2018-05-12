@@ -5,13 +5,18 @@ import kotlin.reflect.KFunction
 
 class SyncRunner(private val doneSignal: CountDownLatch,
                  private val kFunction: KFunction<*>,
-                 private val paramObj: Any,
+                 private val paramObj: Any?,
                  private val obj: Any) : Runnable {
 
     internal var returnValue:Any? = null
 
     override fun run() {
-        returnValue = kFunction.call(obj,paramObj)
+
+        returnValue = if (paramObj == null) {
+            kFunction.call(obj)
+        } else {
+            kFunction.call(obj,paramObj)
+        }
         doneSignal.countDown()
     }
 }

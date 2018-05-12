@@ -5,6 +5,7 @@ import com.llx278.exeventbus.execute.Executor
 import java.lang.ref.WeakReference
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredFunctions
 
 class EventBus {
@@ -27,6 +28,7 @@ class EventBus {
                     Log.e(tag, "$kFunction : index error,subScribe method permit only one or empty parameter")
                     continue
                 }
+
                 var paramType: String
                 paramType = when (size) {
                     1 -> "kotlin.Unit"
@@ -80,22 +82,31 @@ class EventBus {
     /**
      * 向EventBus上发布一个事件，eventObj,tag,returnType和remote唯一标志了Event,所有匹配订阅事件的订阅方法
      * 都会被执行。
+     *
+     * eventObj::class.qualifiedName
      */
-    fun publish(eventObj: Any, tag: String,returnType : String = "kotlin.Unit",remote : Boolean = false): Any? {
-        val paramType = eventObj::class.qualifiedName
+    fun publish(eventObj: Any? = null, tag: String,returnType : String = "kotlin.Unit",remote : Boolean = false): Any? {
+
+        val paramType = if (eventObj == null) {
+            "kotlin.Unit"
+        } else {
+            eventObj::class.qualifiedName
+        }
         val event = Event(paramType,tag,returnType,remote)
         val subscriptionList = subscribedMap[event]
-        if (subscriptionList != null) {
-            subscriptionList.forEach {
-                val executor = Executor.creator(it.threadModel)
-                val subscribe = it.subscribeRef.get()
-                if (subscribe != null) {
-                    if (it.type == Type.BLOCK_RETURN) {
-                        // 因为返回值只能有一个，所以默认只是第一个注册的有效
-                        return executor.submit(it.kFunc,eventObj,subscribe)
-                    } else if(it.type == Type.DEFAULT) {
-                        executor.execute(it.kFunc,eventObj,subscribe)
-                    }
+        if (subscriptionList == null) {
+            Log.e("ExEventBus","cannot find $event from subscribedMap")
+            return null
+        }
+        subscriptionList.forEach {
+            val executor = Executor.creator(it.threadModel)
+            val subscribe = it.subscribeRef.get()
+            if (subscribe != null) {
+                if (it.type == Type.BLOCK_RETURN) {
+                    // 因为返回值只能有一个，所以默认只是第一个注册的有效
+                    return executor.submit(it.kFunc,eventObj,subscribe)
+                } else if(it.type == Type.DEFAULT) {
+                    executor.execute(it.kFunc,eventObj,subscribe)
                 }
             }
         }

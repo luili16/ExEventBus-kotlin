@@ -14,6 +14,6 @@ interface Executor {
         }
     }
 
-    fun execute(kFunction: KFunction<*>, paramObj: Any, obj: Any)
-    fun submit(kFunction: KFunction<*>, paramObj: Any, obj: Any): Any?
+    fun execute(kFunction: KFunction<*>, paramObj: Any?, obj: Any)
+    fun submit(kFunction: KFunction<*>, paramObj: Any?, obj: Any): Any?
 }
