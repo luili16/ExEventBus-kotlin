@@ -11,8 +11,19 @@ interface IRouter : IInterface {
      */
     fun send(address:String,msg : Bundle)
 
-    fun addReceiver()
+    /**
+     * 添加一个用来接收消息的回调接口
+     */
+    fun addReceiver(receiver:IReceiver)
 
+    /**
+     * 取消一个用来接收消息的回调接口
+     */
+    fun removeReceiver()
 
+    /**
+     * 获得连接到服务端的所有的进程
+     */
+    fun getAliveClient() : ArrayList<String>
 
 }
