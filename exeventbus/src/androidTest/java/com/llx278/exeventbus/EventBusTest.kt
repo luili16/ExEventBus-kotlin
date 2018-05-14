@@ -1,6 +1,8 @@
 package com.llx278.exeventbus
 
 import android.util.Log
+import com.llx278.exeventbus.test.EventParam
+import com.llx278.exeventbus.test.Subscriber1
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

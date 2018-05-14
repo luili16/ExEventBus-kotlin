@@ -9,39 +9,37 @@ import android.util.Log
 import java.util.concurrent.ConcurrentHashMap
 
 
-class RouterImpl : Router() {
+class RouterImpl : IRouter.Stub() {
 
     private val receiverMap = ConcurrentHashMap<String, IReceiver>()
 
     override fun send(address: String, msg: Bundle) {
-        Log.d("main","RouterService send($address,$msg)")
         val where = Binder.getCallingPid().toString()
         msg.classLoader = this.javaClass.classLoader
         val isBroadcast = Address.isBroadcast(address)
         if (isBroadcast) {
             receiverMap.forEach {
                 val receiver = it.value
-                receiver.onMessageReceive(where = where, message = msg)
+                receiver.onMessageReceive(where, msg)
             }
         } else {
-            receiverMap[where]?.onMessageReceive(where = where, message = msg)
+            val receiver = receiverMap[address] ?: throw UnExceptedAddressException("unExceptedAddress : $address")
+            receiver.onMessageReceive(where, msg)
         }
     }
 
     override fun addReceiver(receiver: IReceiver) {
-        Log.d("main","RouterService addReceiver $receiver")
         val where = Binder.getCallingPid()
-        receiverMap[where.toString()] = receiver
+        val address = Address.toAddress(where)
+        receiverMap[address.toString()] = receiver
     }
 
     override fun removeReceiver() {
-        Log.d("main","RouterService removeReceiver")
         val where = Binder.getCallingPid()
         receiverMap.remove(where.toString())
     }
 
     override fun getAliveClient(): ArrayList<String> {
-        Log.d("main","RouterService getAvailableClient")
         val where = Binder.getCallingPid().toString()
         val addressList = ArrayList<String>()
         receiverMap.forEach {
@@ -65,6 +63,7 @@ class RouterImpl : Router() {
     }
 }
 
+
 /**
  * 此服务用来中转进程与进程间的数据交互
  */
@@ -72,7 +71,9 @@ class RouterService : Service() {
 
     private val router = RouterImpl()
 
-    override fun onBind(intent: Intent?): IBinder {
+    override fun onBind(intent: Intent?): IBinder? {
         return router
     }
 }
+
+class UnExceptedAddressException(message: String?) : Exception(message)

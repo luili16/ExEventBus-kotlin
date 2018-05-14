@@ -36,9 +36,13 @@ class Address private constructor(val pid: Int) {
                 split[1].toInt()
             } catch (e: NumberFormatException) {
                 Log.e("ExEventBus", "illegal address($address)!", e)
-                return null
+                null
             }
-            return Address(pid)
+            return if (pid != null) {
+                Address(pid)
+            } else {
+                null
+            }
         }
 
         fun toBroadcastAddress(): Address {

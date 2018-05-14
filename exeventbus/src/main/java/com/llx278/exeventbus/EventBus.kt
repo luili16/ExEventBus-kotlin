@@ -22,7 +22,7 @@ class EventBus {
             val subsAnnotation = annotations.find { it is Subscriber }
             // 找到了一个Subscriber
             if (subsAnnotation != null && subsAnnotation is Subscriber) {
-                // 判断函数参数，只允许函数有一个参数
+                // 判断函数参数，只允许函数有一个或者0个参数
                 val size = kFunction.parameters.size
                 if (size >= 3) {
                     Log.e(tag, "$kFunction : index error,subScribe method permit only one or empty parameter")
@@ -35,7 +35,6 @@ class EventBus {
                     2 -> kFunction.parameters[1].type.toString()
                     else -> throw RuntimeException("this should never happen!")
                 }
-                Log.d("main","paramType is $paramType")
                 val returnType = kFunction.returnType.toString()
                 val event = Event(paramType, subsAnnotation.tag, returnType, subsAnnotation.remote)
                 // 找到此event对应的subscriber列表
@@ -90,7 +89,7 @@ class EventBus {
         val paramType = if (eventObj == null) {
             "kotlin.Unit"
         } else {
-            eventObj::class.qualifiedName
+            eventObj::class.qualifiedName ?: throw IllegalArgumentException("invalid event Obj : $eventObj")
         }
         val event = Event(paramType,tag,returnType,remote)
         val subscriptionList = subscribedMap[event]
@@ -111,5 +110,18 @@ class EventBus {
             }
         }
         return null
+    }
+
+    /**
+     * 返回可以远程发布的事件列表
+     */
+    fun queryRemote() : ArrayList<Event> {
+        val eventList = ArrayList<Event>()
+        subscribedMap.forEach {
+            if (it.key.remote) {
+                eventList.add(it.key)
+            }
+        }
+        return eventList
     }
 }

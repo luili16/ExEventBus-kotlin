@@ -1,6 +1,8 @@
-package com.llx278.exeventbus
+package com.llx278.exeventbus.test
 
 import android.util.Log
+import com.llx278.exeventbus.Subscriber
+import com.llx278.exeventbus.Type
 import com.llx278.exeventbus.execute.ThreadModel
 
 /**
@@ -45,6 +47,11 @@ class Subscriber1 {
     @Subscriber(tag = "different_threads",threadModel = ThreadModel.POOL)
     fun eventMethod6() {
         Log.d("main","running in pool thread")
+    }
+
+    @Subscriber(tag = "remote_process",remote = true)
+    fun eventMethod7(event:EventParam) {
+        Log.d("main","receive an remote event : $event")
     }
 }
 
