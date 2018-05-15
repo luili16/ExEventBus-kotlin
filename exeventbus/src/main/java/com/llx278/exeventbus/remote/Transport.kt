@@ -11,16 +11,15 @@ import android.util.Log
 
 private const val TAG = "ExEventBus"
 
-class Transport(context : Context) : IRouter {
+class Transport(context: Context) : IRouter {
 
-    lateinit var router : IRouter
-    val receiver : ReceiverImpl = ReceiverImpl()
-    lateinit var outReceiver : IReceiver
+    lateinit var router: IRouter
+    val receiver: ReceiverImpl = ReceiverImpl()
+    lateinit var outReceiver: IReceiver
 
     init {
-        Log.d(TAG,"transport init ######################")
-        val routerIntent = Intent(context,RouterService::class.java)
-        context.bindService(routerIntent,object : ServiceConnection {
+        val routerIntent = Intent(context, RouterService::class.java)
+        context.bindService(routerIntent, object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
             }
 
@@ -29,11 +28,11 @@ class Transport(context : Context) : IRouter {
                 router.addReceiver(receiver)
             }
 
-        },Context.BIND_AUTO_CREATE)
+        }, Context.BIND_AUTO_CREATE)
     }
 
     override fun send(addrss: String?, msg: Bundle?) {
-        router.send(addrss,msg)
+        router.send(addrss, msg)
     }
 
     override fun addReceiver(receiver: IReceiver?) {
@@ -56,7 +55,7 @@ class Transport(context : Context) : IRouter {
 
     inner class ReceiverImpl : IReceiver.Stub() {
         override fun onMessageReceive(where: String?, message: Bundle?) {
-            outReceiver.onMessageReceive(where,message)
+            outReceiver.onMessageReceive(where, message)
         }
 
         override fun asBinder(): IBinder {

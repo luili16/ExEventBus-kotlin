@@ -19,14 +19,6 @@ class RouterImpl : IRouter.Stub() {
 
     override fun send(address: String, msg: Bundle) {
         val where = Address.toAddress(Binder.getCallingPid()).toString()
-        // 找到可能拥有所有实现parcelable 或 putSerializable的对象，并重新设置classloader
-        msg.keySet().forEach {
-            val obj  = msg.get(it)
-            if (obj != null && (obj is Parcelable || obj is Serializable)) {
-                msg.classLoader = obj::class.java.classLoader
-            }
-        }
-        //msg.classLoader = Event::class.java.classLoader
         val isBroadcast = Address.isBroadcast(address)
         if (isBroadcast) {
             receiverMap.forEach {
@@ -71,8 +63,6 @@ class RouterImpl : IRouter.Stub() {
                 addressList.add(it.key)
             }
         }
-        Log.d(TAG,"RouterService : receiverMap = $receiverMap")
-        Log.d(TAG,"RouterService : addressList = $addressList")
         return addressList
     }
 }

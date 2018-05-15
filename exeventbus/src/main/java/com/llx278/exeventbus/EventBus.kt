@@ -12,6 +12,11 @@ class EventBus {
     private val tag = "ExEventBus"
     internal val subscribedMap: MutableMap<Event, CopyOnWriteArrayList<Subscription>> = ConcurrentHashMap()
 
+    /**
+     * 订阅一个事件
+     * @throws IllegalStateException 当订阅方法的返回值不为空，而将type=Type.DEFAULT的时候会抛出此异常，因为
+     * 当一个订阅方法有返回值的时候则需要将返回值返回去，这意味着需要阻塞当前的线程
+     */
     fun register(subscriber: Any) {
 
         val kClass = subscriber::class
@@ -22,7 +27,7 @@ class EventBus {
             val subsAnnotation = annotations.find { it is Subscriber }
             // 找到了一个Subscriber
             if (subsAnnotation != null && subsAnnotation is Subscriber) {
-                // 判断函数参数，只允许函数有一个或者0个参数
+                // 判断函数参数，只允许函数有一个或者零个参数
                 val size = kFunction.parameters.size
                 if (size >= 3) {
                     Log.e(tag, "$kFunction : index error,subScribe method permit only one or empty parameter")
@@ -35,7 +40,15 @@ class EventBus {
                     2 -> kFunction.parameters[1].type.toString()
                     else -> throw RuntimeException("this should never happen!")
                 }
+
                 val returnType = kFunction.returnType.toString()
+
+
+                if (returnType != "kotlin.Unit" && subsAnnotation.type != Type.BLOCK_RETURN) {
+                    throw IllegalStateException("illegal type and returnType in subscriber annotation," +
+                            "you should let 'type = Type.BLOCK_RETURN' when 'returnType != kotlin.Unit'")
+                }
+
                 val event = Event(paramType, subsAnnotation.tag, returnType, subsAnnotation.remote)
                 // 找到此event对应的subscriber列表
                 var subscriptionList: CopyOnWriteArrayList<Subscription>
@@ -82,19 +95,23 @@ class EventBus {
      * 向EventBus上发布一个事件，eventObj,tag,returnType和remote唯一标志了Event,所有匹配订阅事件的订阅方法
      * 都会被执行。
      *
-     * eventObj::class.qualifiedName
+     * 注意：如果订阅方法的返回值为空，那么就会返回null，自行忽略就好了
      */
-    fun publish(eventObj: Any? = null, tag: String,returnType : String = "kotlin.Unit",remote : Boolean = false): Any? {
+    fun publish(eventObj: Any? = null,
+                tag: String,
+                returnType: String = "kotlin.Unit",
+                remote: Boolean = false): Any? {
 
         val paramType = if (eventObj == null) {
             "kotlin.Unit"
         } else {
-            eventObj::class.qualifiedName ?: throw IllegalArgumentException("invalid event Obj : $eventObj")
+            eventObj::class.qualifiedName
+                    ?: throw IllegalArgumentException("invalid event Obj : $eventObj")
         }
-        val event = Event(paramType,tag,returnType,remote)
+        val event = Event(paramType, tag, returnType, remote)
         val subscriptionList = subscribedMap[event]
         if (subscriptionList == null) {
-            Log.e("ExEventBus","cannot find $event from subscribedMap")
+            Log.e("ExEventBus", "EventBus : cannot find $event from subscribedMap")
             return null
         }
         subscriptionList.forEach {
@@ -103,9 +120,9 @@ class EventBus {
             if (subscribe != null) {
                 if (it.type == Type.BLOCK_RETURN) {
                     // 因为返回值只能有一个，所以默认只是第一个注册的有效
-                    return executor.submit(it.kFunc,eventObj,subscribe)
-                } else if(it.type == Type.DEFAULT) {
-                    executor.execute(it.kFunc,eventObj,subscribe)
+                    return executor.submit(it.kFunc, eventObj, subscribe)
+                } else if (it.type == Type.DEFAULT) {
+                    executor.execute(it.kFunc, eventObj, subscribe)
                 }
             }
         }
@@ -115,7 +132,7 @@ class EventBus {
     /**
      * 返回可以远程发布的事件列表
      */
-    fun queryRemote() : ArrayList<Event> {
+    fun queryRemote(): ArrayList<Event> {
         val eventList = ArrayList<Event>()
         subscribedMap.forEach {
             if (it.key.remote) {
@@ -125,3 +142,5 @@ class EventBus {
         return eventList
     }
 }
+
+class UnSupportRegisterParam(message: String?) : Exception(message)

@@ -8,10 +8,23 @@ import kotlin.reflect.KClass
  * 代表一个订阅事件
  * 这里面传入的方法的参数class和tag作为这个Event的唯一标志
  */
-data class Event(val paramType: String,
-                 val tag: String,
-                 val returnType: String,
-                 val remote: Boolean) : Parcelable {
+data class Event(
+        /**
+         * 订阅方法参数的全修饰名称
+         */
+        val paramType: String,
+        /**
+         * 订阅方法的标志
+         */
+        val tag: String,
+        /**
+         * 订阅方法的返回值的全修饰名称，如果返回值是Unit,则为'koltin.Unit'
+         */
+        val returnType: String,
+        /**
+         * true 代表此事件可以被远程发布
+         */
+        val remote: Boolean) : Parcelable {
     constructor(source: Parcel) : this(
             source.readString(),
             source.readString(),

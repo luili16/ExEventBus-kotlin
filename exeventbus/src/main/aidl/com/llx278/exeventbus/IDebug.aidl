@@ -7,4 +7,5 @@ interface IDebug {
     void sendMsg(String address,String msg);
     String receivedMsg();
     int thisPid();
+    void sendCmd(String cmd);
 }

@@ -61,6 +61,10 @@ class Service1 : Service() {
     }
 
     inner class Debug : IDebug.Stub() {
+        override fun sendCmd(cmd: String?) {
+
+        }
+
         override fun thisPid(): Int {
             return Process.myPid()
         }
@@ -85,6 +89,7 @@ class Service1 : Service() {
 class Service2 : Service() {
 
     private lateinit var poster : Poster
+    private lateinit var debug: Debug
 
     override fun onCreate() {
         super.onCreate()
@@ -94,10 +99,16 @@ class Service2 : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        return Debug()
+        debug = Debug()
+        return debug
     }
 
     private inner class Debug : IDebug.Stub() {
+        override fun sendCmd(cmd: String?) {
+            if ("stop" == cmd) {
+            }
+        }
+
         override fun sendMsg(address: String?, msg: String?) {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }

@@ -10,7 +10,6 @@ import android.util.Log
 import com.llx278.exeventbus.remote.Address
 import com.llx278.exeventbus.remote.IReceiver
 import com.llx278.exeventbus.remote.Transport
-import java.io.Serializable
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CountDownLatch
@@ -107,7 +106,9 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
     }
 
     override fun onMessageReceive(where: String?, message: Bundle?) {
+
         if (where != null && message != null) {
+            message.classLoader = Poster::class.java.classLoader
             messageObserverList.forEach {
                 if (it.handleMessage(where, message)) {
                     return
@@ -118,16 +119,16 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
 
     /**
      * 将此事件发送到其他的进程中执行
-     * 注意，当一个事件被发布到多个进程中执行的时候，如果returnClassName是void.class.getName(),那么
-     * 则只会只将此事件发送到其他的进程执行，直接返回。否则会等待，直到返回当前的执行后的结果。
+     * 注意，当一个事件被发布到多个进程中执行的时候，如果returnType是"kotlin.Unit",那么
+     * 则只会只将此事件发送到其他的进程执行，直接返回。
      *
      * @return 返回执行的结果，如果方法的返回值是void，则默认返回null，如果不是，则返回执行后的结果
      * @throws TimeoutException 超时
      */
-    fun post(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
+    internal fun post(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
         val aliveClients = transport.aliveClient
         if (aliveClients.isEmpty()) {
-            Log.e(TAG, "Poster : no available address")
+            Log.e(TAG, "Poster : no available client")
             return null
         }
 
@@ -135,18 +136,15 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
         val id = UUID.randomUUID().toString()
         subscribeEventListSnapshot[id] = EventListHolder(signal)
 
-        // 发送消息
-        val message = Bundle()
+        // 发送查询事件的消息
+        val message = Bundle(Poster::class.java.classLoader)
         message.putString(KEY_ID, id)
         message.putString(KEY_TYPE, TYPE_VALUE_OF_QUERY)
-        if (eventObj != null) {
-            message.classLoader = eventObj::class.java.classLoader
-        }
+
         val broadcastAddress = Address.toBroadcastAddress()
         transport.send(broadcastAddress.toString(), message)
 
         try {
-
             if (!signal.await(timeout, TimeUnit.MILLISECONDS)) {
                 subscribeEventListSnapshot.remove(id)
                 throw TimeoutException("query value timeout")
@@ -154,17 +152,13 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
         } catch (e: InterruptedException) {
             Log.e(TAG, "unExcepted interrupt when query value")
         }
-        val paramType: String? = if (eventObj == null) {
-            Unit::class.qualifiedName
+        val paramType: String = if (eventObj == null) {
+            "kotlin.Unit"
         } else {
             eventObj::class.qualifiedName
+                    ?: throw IllegalArgumentException("invalid eventObj($eventObj)")
         }
 
-        if (paramType == null) {
-            subscribeEventListSnapshot.remove(id)
-            Log.e(TAG, "empty qualified name in $eventObj")
-            return null
-        }
         val event = Event(paramType = paramType, tag = tag, returnType = returnType, remote = true)
         val eventListHolder = subscribeEventListSnapshot[id]
         if (eventListHolder == null) {
@@ -172,6 +166,7 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
             Log.e(TAG, "empty eventListHolder")
             return null
         }
+
         val eventsMap = eventListHolder.eventsMap
         val addressList = getAddressOf(event, eventsMap = eventsMap)
         if (addressList.isEmpty()) {
@@ -188,7 +183,7 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
             null
         } else {
             val address = addressList[0]
-            post(address, event, tag, returnType, timeout)
+            post(address, eventObj, tag, returnType, timeout)
         }
     }
 
@@ -235,15 +230,12 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
         fun publishToRemote(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
 
             // 封装消息
-            val message = Bundle()
+            val message = Bundle(Poster::class.java.classLoader)
             message.putString(KEY_TYPE, TYPE_VALUE_OF_PUBLISH)
             message.putString(KEY_ID, id)// 其他类型需要缓存执行的事件，等待执行结果的返回
-            // 直接发送，不需要等待返回值
-            when {
-                eventObj is Serializable -> message.putSerializable(KEY_EVENT_OBJ, eventObj)
-                eventObj is Parcelable -> message.putParcelable(KEY_EVENT_OBJ, eventObj)
-                eventObj != null -> throw  IllegalArgumentException("eventObj(${eventObj::class.qualifiedName} is " +
-                        "not implement Serializable or Parcelable")
+
+            if (eventObj != null) {
+                convertType(eventObj, message, KEY_EVENT_OBJ)
             }
 
             message.putString(KEY_TAG, tag)
@@ -271,6 +263,28 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
         }
     }
 
+    /**
+     * 判断合适的类型，并放入message
+     */
+    private fun convertType(value: Any, message: Bundle, key: String) {
+        when (value) {
+            is Byte -> message.putByte(key, value)
+            is ByteArray -> message.putByteArray(key, value)
+            is Char -> message.putChar(key, value)
+            is CharArray -> message.putCharArray(key, value)
+            is CharSequence -> message.putCharSequence(key, value)
+            is Int -> message.putInt(key, value)
+            is IntArray -> message.putIntArray(key, value)
+            is Long -> message.putLong(key, value)
+            is LongArray -> message.putLongArray(key, value)
+            is String -> message.putString(key, value)
+        //is ArrayList<out Parcelable!> -> message.putParcelableArrayList(KEY_RETURN_VALUE,value)
+            is Parcelable -> message.putParcelable(key, value)
+            else -> throw IllegalArgumentException("eventObj(" + value::class.qualifiedName
+                    + ") is not primary type or parcelable type")
+        }
+    }
+
     // --------------------- MessageObserver的不同实现 -------------------------
     /**
      * 用来处理查询注册列表的类
@@ -281,10 +295,9 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
             if (TYPE_VALUE_OF_QUERY == typeValue) {
                 val allEvents = eventBus.queryRemote()
                 val id = message.getString(KEY_ID)
-                val valueMessage = Bundle()
+                val valueMessage = Bundle(Poster::class.java.classLoader)
                 valueMessage.putString(KEY_ID, id)
                 valueMessage.putString(KEY_TYPE, TYPE_VALUE_OF_QUERY_RESULT)
-                valueMessage.classLoader = javaClass.classLoader
                 valueMessage.putParcelableArrayList(KEY_QUERY_LIST, allEvents)
                 try {
                     transport.send(where, valueMessage)
@@ -333,15 +346,10 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
                 val returnValue = eventBus.publish(eventObj, tag, returnType, true)
                 // 只有返回值是非空的才会发送回去
                 if (!TextUtils.isEmpty(returnType) && returnType != "kotlin.Unit") {
-                    val valueMessage = Bundle()
+                    val valueMessage = Bundle(Poster::class.java.classLoader)
                     valueMessage.putString(KEY_TYPE, TYPE_VALUE_OF_PUBLISH_RETURN_VALUE)
                     if (returnValue != null) {
-                        when (returnValue) {
-                            is Serializable -> valueMessage.putSerializable(KEY_RETURN_VALUE, returnValue)
-                            is Parcelable -> valueMessage.putParcelable(KEY_RETURN_VALUE, returnValue)
-                            else -> throw IllegalArgumentException("eventObj(" + returnValue::class.qualifiedName
-                                    + ") is not implement Serializable or Parcelable")
-                        }
+                        convertType(returnValue, valueMessage, KEY_RETURN_VALUE)
                     }
                     valueMessage.putString(KEY_ID, id)
                     transport.send(where, valueMessage)

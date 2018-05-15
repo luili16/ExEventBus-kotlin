@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.support.test.runner.intent.IntentCallback
+import android.util.Log
 import com.llx278.exeventbus.test.EventParam
 import com.llx278.exeventbus.test.Service2
 import com.llx278.exeventbus.test.Subscriber1
@@ -39,6 +40,8 @@ class PosterTest {
         Thread.sleep(2000)
         poster.post(eventObj,tag,"kotlin.Unit",1000 * 5)
 
-        Thread.sleep(5000)
+        val returnType = String::class.qualifiedName ?: "kotlin.Unit"
+        val result = poster.post(eventObj = eventObj,tag = tag,returnType = returnType,timeout = 1000 * 5)
+        Log.d("main","result : $result")
     }
 }
