@@ -94,7 +94,7 @@ class Service2 : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return Debug()
     }
 
     private inner class Debug : IDebug.Stub() {

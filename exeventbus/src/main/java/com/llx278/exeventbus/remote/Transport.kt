@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 
 
 private const val TAG = "ExEventBus"
@@ -14,9 +15,10 @@ class Transport(context : Context) : IRouter {
 
     lateinit var router : IRouter
     val receiver : ReceiverImpl = ReceiverImpl()
-    lateinit var outerReceiver : IReceiver
+    lateinit var outReceiver : IReceiver
 
     init {
+        Log.d(TAG,"transport init ######################")
         val routerIntent = Intent(context,RouterService::class.java)
         context.bindService(routerIntent,object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -36,7 +38,7 @@ class Transport(context : Context) : IRouter {
 
     override fun addReceiver(receiver: IReceiver?) {
         if (receiver != null) {
-            outerReceiver = receiver
+            outReceiver = receiver
         }
     }
 
@@ -54,7 +56,7 @@ class Transport(context : Context) : IRouter {
 
     inner class ReceiverImpl : IReceiver.Stub() {
         override fun onMessageReceive(where: String?, message: Bundle?) {
-            outerReceiver.onMessageReceive(where,message)
+            outReceiver.onMessageReceive(where,message)
         }
 
         override fun asBinder(): IBinder {

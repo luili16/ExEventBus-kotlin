@@ -36,7 +36,9 @@ class PosterTest {
 
         val tag = "remote_process"
         val eventObj = EventParam("event","param")
-
+        Thread.sleep(2000)
         poster.post(eventObj,tag,"kotlin.Unit",1000 * 5)
+
+        Thread.sleep(5000)
     }
 }

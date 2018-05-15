@@ -127,7 +127,7 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
     fun post(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
         val aliveClients = transport.aliveClient
         if (aliveClients.isEmpty()) {
-            Log.e(TAG, "no available address")
+            Log.e(TAG, "Poster : no available address")
             return null
         }
 
@@ -139,6 +139,9 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
         val message = Bundle()
         message.putString(KEY_ID, id)
         message.putString(KEY_TYPE, TYPE_VALUE_OF_QUERY)
+        if (eventObj != null) {
+            message.classLoader = eventObj::class.java.classLoader
+        }
         val broadcastAddress = Address.toBroadcastAddress()
         transport.send(broadcastAddress.toString(), message)
 
