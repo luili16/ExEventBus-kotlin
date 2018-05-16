@@ -118,6 +118,17 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
     }
 
     /**
+     * 当进程退出可以调用此方法来解除与RouterService的连接
+     *
+     * 不用此方法也没什么问题，但是会在当前进程退出以后ActivityThread会抛出一个
+     *
+     *  Service xxx.xxx.xxx has leaked ServiceConnection的异常
+     */
+    fun clearUp() {
+       transport.destroy()
+    }
+
+    /**
      * 将此事件发送到其他的进程中执行
      * 注意，当一个事件被发布到多个进程中执行的时候，如果returnType是"kotlin.Unit",那么
      * 则只会只将此事件发送到其他的进程执行，直接返回。
@@ -272,7 +283,7 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
             is ByteArray -> message.putByteArray(key, value)
             is Char -> message.putChar(key, value)
             is CharArray -> message.putCharArray(key, value)
-            is CharSequence -> message.putCharSequence(key, value)
+            //is CharSequence -> message.putCharSequence(key, value)
             is Int -> message.putInt(key, value)
             is IntArray -> message.putIntArray(key, value)
             is Long -> message.putLong(key, value)

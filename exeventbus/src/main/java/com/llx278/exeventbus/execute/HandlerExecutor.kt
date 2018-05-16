@@ -6,6 +6,8 @@ import java.util.concurrent.CountDownLatch
 import kotlin.reflect.KFunction
 
 object HandlerExecutor : Executor {
+    override fun quit() {
+    }
 
     private val handler : Handler
 

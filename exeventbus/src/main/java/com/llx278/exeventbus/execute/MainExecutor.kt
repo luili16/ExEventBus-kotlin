@@ -6,6 +6,8 @@ import java.util.concurrent.CountDownLatch
 import kotlin.reflect.KFunction
 
 object MainExecutor : Executor {
+    override fun quit() {
+    }
 
     private val handler : Handler = Handler(Looper.getMainLooper())
 
@@ -24,7 +26,6 @@ object MainExecutor : Executor {
             } else {
                 kFunction.call(obj,paramObj)
             }
-
         }
     }
 }

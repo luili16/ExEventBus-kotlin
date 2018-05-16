@@ -1,20 +1,19 @@
 package com.llx278.exeventbus.execute
 
-import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
 import kotlin.reflect.KFunction
 
 object PoolExecutor : Executor {
-    private var num = 1
-    private const val threadName: String = "ExEventBus-pool_thread"
-    private val executorService = Executors.newCachedThreadPool {
-        if (num == Int.MAX_VALUE) {
-            num = 0
-        }
-        Thread(it, threadName + num++)
-    }!!
+
+    private var executorService : ExecutorService? = null
 
     override fun execute(kFunction: KFunction<*>, paramObj: Any?, obj: Any) {
-        executorService.execute {
+
+        if (executorService == null) {
+            executorService = Provider.provide()
+        }
+
+        executorService!!.execute {
             if (paramObj == null) {
                 kFunction.call(obj)
             } else {
@@ -24,7 +23,12 @@ object PoolExecutor : Executor {
     }
 
     override fun submit(kFunction: KFunction<*>, paramObj: Any?, obj: Any): Any? {
-        return executorService.submit {
+
+        if (executorService == null) {
+            executorService = Provider.provide()
+        }
+
+        return executorService!!.submit {
             if (paramObj == null) {
                 kFunction.call(obj)
             } else {
@@ -33,4 +37,9 @@ object PoolExecutor : Executor {
         }.get()
     }
 
+    override fun quit() {
+        if (executorService != null) {
+            executorService!!.shutdown()
+        }
+    }
 }

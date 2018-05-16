@@ -30,7 +30,7 @@ class Service1 : Service() {
         val service = Intent(this, RouterService::class.java)
         val success = bindService(service, MyConnection(), Context.BIND_AUTO_CREATE)
         if (!success) {
-            Log.d("main", "Service1 bind RouteService failed!")
+            Log.d("main", "Service1 bind to RouteService failed!")
         }
     }
 
@@ -61,6 +61,7 @@ class Service1 : Service() {
     }
 
     inner class Debug : IDebug.Stub() {
+
         override fun sendCmd(cmd: String?) {
 
         }
@@ -95,6 +96,7 @@ class Service2 : Service() {
         super.onCreate()
         val eventBus = EventBus()
         eventBus.register(Subscriber1())
+        eventBus.register(Subscriber2())
         poster = Poster(this,eventBus)
     }
 
@@ -106,6 +108,7 @@ class Service2 : Service() {
     private inner class Debug : IDebug.Stub() {
         override fun sendCmd(cmd: String?) {
             if ("stop" == cmd) {
+                poster.clearUp()
             }
         }
 

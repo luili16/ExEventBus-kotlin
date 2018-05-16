@@ -49,12 +49,12 @@ class RouterImpl : IRouter.Stub() {
             val binder = receiver.asBinder()
             var hasRemoved = false
             if (binder == null) {
-                Log.d(TAG,"RouterService : binder is null!")
+                Log.e(TAG,"RouterService : binder is null!")
                 receiverMap.remove(it.key)
                 hasRemoved = true
             }
             if (!binder.pingBinder()) {
-                Log.d(TAG,"RouterService : ping binder return false!")
+                Log.e(TAG,"RouterService : ping binder return false!")
                 receiverMap.remove(it.key)
                 hasRemoved = true
             }

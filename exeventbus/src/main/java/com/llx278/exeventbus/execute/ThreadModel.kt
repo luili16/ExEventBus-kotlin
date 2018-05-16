@@ -10,7 +10,7 @@ enum class ThreadModel(val threadName:String) {
     MAIN("main"),
 
     /**
-     * 在发布订阅事件的哪个线程中执行
+     * 在发布订阅事件的那个线程中执行
      */
     POST("publish"),
 

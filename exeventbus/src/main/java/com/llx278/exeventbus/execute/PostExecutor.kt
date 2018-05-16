@@ -3,6 +3,8 @@ package com.llx278.exeventbus.execute
 import kotlin.reflect.KFunction
 
 object PostExecutor : Executor {
+    override fun quit() {
+    }
 
     override fun execute(kFunction: KFunction<*>, paramObj: Any?, obj: Any) {
         if (paramObj == null) {

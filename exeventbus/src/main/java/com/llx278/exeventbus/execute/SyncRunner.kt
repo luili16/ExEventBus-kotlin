@@ -8,15 +8,18 @@ class SyncRunner(private val doneSignal: CountDownLatch,
                  private val paramObj: Any?,
                  private val obj: Any) : Runnable {
 
-    internal var returnValue:Any? = null
+    internal var returnValue: Any? = null
+        private set
 
     override fun run() {
-
-        returnValue = if (paramObj == null) {
-            kFunction.call(obj)
-        } else {
-            kFunction.call(obj,paramObj)
+        try {
+            returnValue = if (paramObj == null) {
+                kFunction.call(obj)
+            } else {
+                kFunction.call(obj, paramObj)
+            }
+        } finally {
+            doneSignal.countDown()
         }
-        doneSignal.countDown()
     }
 }
