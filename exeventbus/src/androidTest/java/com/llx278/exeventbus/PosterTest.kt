@@ -163,7 +163,21 @@ class PosterTest {
         Log.d("main","retVal is ${retVal!!::class.qualifiedName}")
         assertTrue(retVal is EventParam)
         assertEquals(param.p1,(retVal as EventParam).p1)
-        assertEquals(param.p2,(retVal as EventParam).p2)
+        assertEquals(param.p2, retVal.p2)
+    }
+
+    @Test
+    fun paramParcelableArrayTest() {
+        val tag = "parameter_tes_ParcelableArrayList"
+        val params = ArrayList<EventParam>()
+        params.add(EventParam("a","b"))
+        params.add(EventParam("c","d"))
+        params.add(EventParam("e","f"))
+        val returnType = params::class.qualifiedName ?: "kotlin.Unit"
+        val retVal = poster.post(params,tag,returnType,5000)
+        Log.d("main","retval is $retVal")
+        assertTrue(retVal is ArrayList<*>)
+        assertEquals(params,retVal)
     }
 
     // ------------------------------ (end) -------------------------------------

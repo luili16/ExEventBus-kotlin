@@ -144,6 +144,12 @@ class Subscriber2 {
         Log.d("main", "Subscriber2 : eventMethod12 param is $param")
         return param
     }
+
+    @Subscriber(tag = "parameter_tes_ParcelableArrayList", remote = true, type = Type.BLOCK)
+    fun eventMethod13(param : ArrayList<EventParam>) : ArrayList<EventParam> {
+        Log.d("main", "Subscriber2 : eventMethod13 param is $param")
+        return param
+    }
 }
 
 class Subscriber3 {

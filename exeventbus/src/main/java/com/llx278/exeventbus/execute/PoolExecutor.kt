@@ -10,7 +10,7 @@ object PoolExecutor : Executor {
     override fun execute(kFunction: KFunction<*>, paramObj: Any?, obj: Any) {
 
         if (executorService == null) {
-            executorService = Provider.provide()
+            executorService = ThreadPoolProvider.provide()
         }
 
         executorService!!.execute {
@@ -25,7 +25,7 @@ object PoolExecutor : Executor {
     override fun submit(kFunction: KFunction<*>, paramObj: Any?, obj: Any): Any? {
 
         if (executorService == null) {
-            executorService = Provider.provide()
+            executorService = ThreadPoolProvider.provide()
         }
 
         return executorService!!.submit {
