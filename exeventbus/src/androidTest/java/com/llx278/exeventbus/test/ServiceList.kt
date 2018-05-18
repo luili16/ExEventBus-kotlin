@@ -125,3 +125,14 @@ class Service2 : Service() {
         }
     }
 }
+
+
+class Service3 : Service() {
+
+
+
+    override fun onBind(intent: Intent?): IBinder {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+}

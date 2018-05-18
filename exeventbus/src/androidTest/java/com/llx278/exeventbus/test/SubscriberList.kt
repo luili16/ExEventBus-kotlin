@@ -145,9 +145,9 @@ class Subscriber2 {
         return param
     }
 
-    @Subscriber(tag = "parameter_tes_ParcelableArrayList", remote = true, type = Type.BLOCK)
-    fun eventMethod13(param : ArrayList<EventParam>) : ArrayList<EventParam> {
-        Log.d("main", "Subscriber2 : eventMethod13 param is $param")
+    @Subscriber(tag = "parameter_tes_ArrayHolder", remote = true, type = Type.BLOCK)
+    fun eventMethod14(param : ArrayHolder) : ArrayHolder {
+        Log.d("main","Subscriber2 : eventMethod14 param is $param")
         return param
     }
 }
@@ -164,6 +164,11 @@ class Subscriber3 {
         Log.d("main", "call tag = 'block_return_method in Subscriber3 method2'")
         return "block_return_method"
     }
+
+
+    fun method3() {
+
+    }
 }
 
 class Subscriber4 {
@@ -172,11 +177,21 @@ class Subscriber4 {
         Log.d("main", "call tag = 'no_return_method' in Subscriber4 method1")
     }
 
-    @Subscriber(tag = "block_return_int_method", type = Type.BLOCK)
+    @Subscriber(tag = "block_return_int_method", type = Type.BLOCK,threadModel = ThreadModel.MAIN)
     fun method2(param : Int) : Int {
         Log.d("main", "call tag = 'no_return_method' in Subscriber4 method1")
         return param
     }
+
+    @Subscriber(tag = "block_return_int_method", type = Type.BLOCK,threadModel = ThreadModel.POST)
+    fun method3(param:EventParam) : String {
+        Log.d("main","Subscriber4 ")
+        return param.p1
+    }
+
+
+
+
 }
 
 class Subscriber5 {

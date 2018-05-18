@@ -290,10 +290,8 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
             is LongArray -> message.putLongArray(key, value)
             is String -> message.putString(key, value)
             is ArrayList<*> -> {
-                // 因为在运行时丢失了泛型信息，所以不知道ArrayList里面的元素是什么，
-                // 但是假设所有list里面的数据都是一致的，所以只取list里面的第一个数据，
-                // 用这个数据来判断具体是什么类型
-                val test = value[0]
+
+                /*val test = value[0]
                 when (test) {
                     is Parcelable -> @Suppress("UNCHECKED_CAST")
                     message.putParcelableArrayList(key, value as java.util.ArrayList<out Parcelable>?)
@@ -301,7 +299,9 @@ class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
                     message.putIntegerArrayList(key, value as java.util.ArrayList<Int>?)
                     is String -> @Suppress("UNCHECKED_CAST")
                     message.putStringArrayList(key, value as java.util.ArrayList<String>?)
-                }
+                }*/
+                throw IllegalArgumentException("Can't support ArrayList at this time,you should use " +
+                        "an `holder`class to hold ArrayList")
             }
             is Parcelable -> message.putParcelable(key, value)
             else -> throw IllegalArgumentException("eventObj(" + value::class.qualifiedName

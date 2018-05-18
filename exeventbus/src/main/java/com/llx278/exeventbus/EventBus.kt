@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.full.declaredFunctions
 
-class EventBus {
+internal class EventBus {
     private val tag = "ExEventBus"
     internal val subscribedMap: MutableMap<Event, CopyOnWriteArrayList<Subscription>> = ConcurrentHashMap()
 

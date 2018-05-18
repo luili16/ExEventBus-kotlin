@@ -5,6 +5,7 @@ import android.support.test.InstrumentationRegistry
 import android.support.test.rule.ServiceTestRule
 import android.support.test.runner.AndroidJUnit4
 import android.util.Log
+import com.llx278.exeventbus.test.ArrayHolder
 import com.llx278.exeventbus.test.EventParam
 import com.llx278.exeventbus.test.Service2
 import org.junit.*
@@ -167,19 +168,18 @@ class PosterTest {
     }
 
     @Test
-    fun paramParcelableArrayTest() {
-        val tag = "parameter_tes_ParcelableArrayList"
-        val params = ArrayList<EventParam>()
-        params.add(EventParam("a","b"))
-        params.add(EventParam("c","d"))
-        params.add(EventParam("e","f"))
-        val returnType = params::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(params,tag,returnType,5000)
-        Log.d("main","retval is $retVal")
-        assertTrue(retVal is ArrayList<*>)
-        assertEquals(params,retVal)
+    fun paramArrayHolderTest() {
+        val tag = "parameter_tes_ArrayHolder"
+        val eventParams = ArrayList<EventParam>()
+        eventParams.add(EventParam("a","b"))
+        eventParams.add(EventParam("c","d"))
+        eventParams.add(EventParam("e","f"))
+        val param = ArrayHolder(eventParams)
+        val returnType = ArrayHolder::class.qualifiedName ?: "kotlin.Unit"
+        val retVal = poster.post(param,tag,returnType,5000)
+        assertTrue(retVal is ArrayHolder)
+        assertEquals(param,retVal)
+        Log.d("main","ArrayHolder is $retVal")
     }
-
     // ------------------------------ (end) -------------------------------------
-
 }
