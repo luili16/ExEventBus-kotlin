@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
  * 代表一个订阅事件
  * 这里面传入的方法的参数class和tag作为这个Event的唯一标志
  */
-data class Event(
+internal data class Event(
         /**
          * 订阅方法参数的全修饰名称
          */

@@ -10,6 +10,7 @@ import android.os.IBinder
 import android.os.Process
 import android.util.Log
 import com.llx278.exeventbus.EventBus
+import com.llx278.exeventbus.ExEventBus
 import com.llx278.exeventbus.IDebug
 import com.llx278.exeventbus.Poster
 import com.llx278.exeventbus.remote.EMPTY
@@ -80,7 +81,7 @@ class Service1 : Service() {
             router.send(address, bundle)
         }
 
-        override fun receivedMsg(): String {
+        override fun receivedMsg(num: Int): String {
             Log.d("main", "Service1 receiveMsg = $")
             return currentMsg
         }
@@ -89,7 +90,7 @@ class Service1 : Service() {
 
 class Service2 : Service() {
 
-    private lateinit var poster : Poster
+    private lateinit var poster: Poster
     private lateinit var debug: Debug
 
     override fun onCreate() {
@@ -97,7 +98,7 @@ class Service2 : Service() {
         val eventBus = EventBus()
         eventBus.register(Subscriber1())
         eventBus.register(Subscriber2())
-        poster = Poster(this,eventBus)
+        poster = Poster(this, eventBus)
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -116,7 +117,7 @@ class Service2 : Service() {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
-        override fun receivedMsg(): String {
+        override fun receivedMsg(num: Int): String {
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
@@ -129,10 +130,192 @@ class Service2 : Service() {
 
 class Service3 : Service() {
 
+    private lateinit var debug: Debug
+    private val subscriber3 = Subscriber3()
+    private val subscriber4 = Subscriber4()
+    private val subscriber5 = Subscriber5()
+    private val subscriber6 = Subscriber6()
 
-
-    override fun onBind(intent: Intent?): IBinder {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun onCreate() {
+        super.onCreate()
+        ExEventBus.init(this)
+        ExEventBus.register(subscriber3)
+        ExEventBus.register(subscriber4)
+        ExEventBus.register(subscriber5)
+        ExEventBus.register(subscriber6)
     }
 
+    override fun onBind(intent: Intent?): IBinder {
+        debug = Debug()
+        return debug
+    }
+
+    private inner class Debug : IDebug.Stub() {
+        override fun sendCmd(cmd: String?) {
+            if ("stop" == cmd) {
+                ExEventBus.internalClear()
+            }
+        }
+
+        override fun sendMsg(address: String?, msg: String?) {
+        }
+
+        override fun receivedMsg(num: Int): String {
+            return when (num) {
+                3 -> subscriber3.receivedMsg
+                4 -> subscriber4.receivedMsg
+                5 -> subscriber5.receivedMsg
+                6 -> subscriber6.receivedMsg
+                else -> ""
+            }
+        }
+
+        override fun thisPid(): Int {
+            return Process.myPid()
+        }
+    }
+}
+
+class Service4 : Service() {
+
+    private lateinit var debug: Debug
+    private val subscriber3 = Subscriber3()
+    private val subscriber4 = Subscriber4()
+    private val subscriber5 = Subscriber5()
+    private val subscriber6 = Subscriber6()
+
+    override fun onCreate() {
+        super.onCreate()
+        ExEventBus.init(this)
+        ExEventBus.register(subscriber3)
+        ExEventBus.register(subscriber4)
+        ExEventBus.register(subscriber5)
+        ExEventBus.register(subscriber6)
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        debug = Debug()
+        return debug
+    }
+
+    private inner class Debug : IDebug.Stub() {
+        override fun sendCmd(cmd: String?) {
+            if ("stop" == cmd) {
+                ExEventBus.internalClear()
+            }
+        }
+
+        override fun sendMsg(address: String?, msg: String?) {
+        }
+
+        override fun receivedMsg(num: Int): String {
+            return when (num) {
+                3 -> subscriber3.receivedMsg
+                4 -> subscriber4.receivedMsg
+                5 -> subscriber5.receivedMsg
+                6 -> subscriber6.receivedMsg
+                else -> ""
+            }
+        }
+
+        override fun thisPid(): Int {
+            return Process.myPid()
+        }
+    }
+}
+
+class Service5 : Service() {
+
+    private lateinit var debug: Debug
+    private val subscriber3 = Subscriber3()
+    private val subscriber4 = Subscriber4()
+    private val subscriber5 = Subscriber5()
+    private val subscriber6 = Subscriber6()
+
+    override fun onCreate() {
+        super.onCreate()
+        ExEventBus.init(this)
+        ExEventBus.register(subscriber3)
+        ExEventBus.register(subscriber4)
+        ExEventBus.register(subscriber5)
+        ExEventBus.register(subscriber6)
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        debug = Debug()
+        return debug
+    }
+
+    private inner class Debug : IDebug.Stub() {
+        override fun sendCmd(cmd: String?) {
+            if ("stop" == cmd) {
+                ExEventBus.internalClear()
+            }
+        }
+
+        override fun sendMsg(address: String?, msg: String?) {
+        }
+
+        override fun receivedMsg(num: Int): String {
+            return when (num) {
+                3 -> subscriber3.receivedMsg
+                4 -> subscriber4.receivedMsg
+                5 -> subscriber5.receivedMsg
+                6 -> subscriber6.receivedMsg
+                else -> ""
+            }
+        }
+
+        override fun thisPid(): Int {
+            return Process.myPid()
+        }
+    }
+}
+
+class Service6 : Service() {
+
+    private lateinit var debug: Debug
+    private val subscriber3 = Subscriber3()
+    private val subscriber4 = Subscriber4()
+    private val subscriber5 = Subscriber5()
+    private val subscriber6 = Subscriber6()
+
+    override fun onCreate() {
+        super.onCreate()
+        ExEventBus.init(this)
+        ExEventBus.register(subscriber3)
+        ExEventBus.register(subscriber4)
+        ExEventBus.register(subscriber5)
+        ExEventBus.register(subscriber6)
+    }
+
+    override fun onBind(intent: Intent?): IBinder {
+        debug = Debug()
+        return debug
+    }
+
+    private inner class Debug : IDebug.Stub() {
+        override fun sendCmd(cmd: String?) {
+            if ("stop" == cmd) {
+                ExEventBus.internalClear()
+            }
+        }
+
+        override fun sendMsg(address: String?, msg: String?) {
+        }
+
+        override fun receivedMsg(num: Int): String {
+            return when (num) {
+                3 -> subscriber3.receivedMsg
+                4 -> subscriber4.receivedMsg
+                5 -> subscriber5.receivedMsg
+                6 -> subscriber6.receivedMsg
+                else -> ""
+            }
+        }
+
+        override fun thisPid(): Int {
+            return Process.myPid()
+        }
+    }
 }

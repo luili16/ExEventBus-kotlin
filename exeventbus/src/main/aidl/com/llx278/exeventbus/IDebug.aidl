@@ -5,7 +5,7 @@ package com.llx278.exeventbus;
 
 interface IDebug {
     void sendMsg(String address,String msg);
-    String receivedMsg();
+    String receivedMsg(int num);
     int thisPid();
     void sendCmd(String cmd);
 }

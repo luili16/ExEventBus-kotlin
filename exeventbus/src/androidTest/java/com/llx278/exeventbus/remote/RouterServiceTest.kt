@@ -21,7 +21,7 @@ class RouterServiceTest {
     var currentMsg: String = EMPTY
     @Rule
     @JvmField
-    public val serviceTestRule = ServiceTestRule()
+    val serviceTestRule = ServiceTestRule()
 
     @Before
     fun setUp() {
@@ -63,7 +63,7 @@ class RouterServiceTest {
         endTime = SystemClock.uptimeMillis() + 5000
         while (SystemClock.uptimeMillis() < endTime) {
             Thread.sleep(1000)
-            testMsg = service1.receivedMsg()
+            testMsg = service1.receivedMsg(1)
             if (testMsg != EMPTY) {
                 break
             }

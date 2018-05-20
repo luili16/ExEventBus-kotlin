@@ -2,11 +2,15 @@ package com.llx278.exeventbus
 
 import android.util.Log
 import com.llx278.exeventbus.execute.Executor
+import com.llx278.exeventbus.execute.SyncRunner
 import java.lang.ref.WeakReference
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.reflect.full.declaredFunctions
 
+/**
+ * EventBus实现了进程内消息的发布/订阅
+ */
 internal class EventBus {
     private val tag = "ExEventBus"
     internal val subscribedMap: MutableMap<Event, CopyOnWriteArrayList<Subscription>> = ConcurrentHashMap()
@@ -20,7 +24,6 @@ internal class EventBus {
      * 当一个订阅方法有返回值的时候则需要将返回值返回去，这意味着需要阻塞当前的线程
      */
     fun register(subscriber: Any) {
-
         val kClass = subscriber::class
         val iterator = kClass.declaredFunctions.iterator()
         while (iterator.hasNext()) {
@@ -143,5 +146,3 @@ internal class EventBus {
         return eventList
     }
 }
-
-class UnSupportRegisterParam(message: String?) : Exception(message)

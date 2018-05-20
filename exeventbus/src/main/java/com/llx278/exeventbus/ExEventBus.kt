@@ -2,6 +2,9 @@ package com.llx278.exeventbus
 
 import android.content.Context
 
+/**
+ * ExEventBus实现了进程间消息的发布/订阅
+ */
 object ExEventBus {
 
     private val eventBus: EventBus = EventBus()
@@ -13,6 +16,23 @@ object ExEventBus {
      */
     fun init(context: Context) {
         poster = Poster(context, eventBus)
+    }
+
+    /**
+     * 订阅一个事件
+     *
+     * 注意： 同一个订阅事件不要重复注册，这样会导致一个订阅事件会被执行多次
+     *
+     * @throws IllegalStateException 当订阅方法的返回值不为空，并且type=Type.DEFAULT的时候会抛出此异常，因为
+     * 当一个订阅方法有返回值的时候则需要将返回值返回去，这意味着需要阻塞当前的线程
+     */
+    fun register(subscriber: Any) {
+        eventBus.register(subscriber)
+    }
+
+
+    fun unRegister(subscriber: Any) {
+        eventBus.unRegister(subscriber)
     }
 
     /**
@@ -49,5 +69,12 @@ object ExEventBus {
      */
     fun remotePublish(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
         return poster.post(eventObj, tag, returnType, timeout)
+    }
+
+    /**
+     * 仅测试用
+     */
+    internal fun internalClear() {
+        poster.clearUp()
     }
 }

@@ -75,7 +75,7 @@ private const val KEY_ID = "router_id"
 /**
  * Poster封装了如何将事件投递到其他的进程去
  */
-class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
+internal class Poster(context: Context, private val eventBus: EventBus) : IReceiver {
 
     private val transport: Transport = Transport(context)
     /**

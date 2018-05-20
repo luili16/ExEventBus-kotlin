@@ -146,65 +146,107 @@ class Subscriber2 {
     }
 
     @Subscriber(tag = "parameter_tes_ArrayHolder", remote = true, type = Type.BLOCK)
-    fun eventMethod14(param : ArrayHolder) : ArrayHolder {
-        Log.d("main","Subscriber2 : eventMethod14 param is $param")
+    fun eventMethod14(param: ArrayHolder): ArrayHolder {
+        Log.d("main", "Subscriber2 : eventMethod14 param is $param")
         return param
     }
 }
 
 class Subscriber3 {
 
-    @Subscriber(tag = "no_return_method")
-    fun method1() {
+    var receivedMsg: String = ""
+
+    @Subscriber(tag = "no_return_method", remote = true)
+    fun method1(param: String) {
         Log.d("main", "call tag = 'no_return_method' in Subscriber3 method1")
+        Thread.sleep(10)
+        receivedMsg = param
     }
 
-    @Subscriber(tag = "block_return_method", type = Type.BLOCK)
-    fun method2(): String {
-        Log.d("main", "call tag = 'block_return_method in Subscriber3 method2'")
-        return "block_return_method"
+    @Subscriber(tag = "block_return_String_method", type = Type.BLOCK, remote = true)
+    fun method2(param: String): String {
+        Log.d("main", "call tag = 'block_return_String_method' in Subscriber3 method2")
+        Thread.sleep(10)
+        return param
     }
 
-
-    fun method3() {
-
+    @Subscriber(tag = "block_return_param_method", type = Type.BLOCK, remote = true)
+    fun method3(param: EventParam): EventParam {
+        Log.d("main", "call tag = 'block_return_param_method' in Subscriber3 method2")
+        Thread.sleep(10)
+        return param
     }
 }
 
 class Subscriber4 {
-    @Subscriber(tag = "no_return_method", threadModel = ThreadModel.HANDLER)
-    fun method1() {
+    var receivedMsg: String = ""
+    @Subscriber(tag = "no_return_method", threadModel = ThreadModel.HANDLER, remote = true)
+    fun method1(param: String) {
         Log.d("main", "call tag = 'no_return_method' in Subscriber4 method1")
+        Thread.sleep(10)
+        receivedMsg = param
     }
 
-    @Subscriber(tag = "block_return_int_method", type = Type.BLOCK,threadModel = ThreadModel.MAIN)
-    fun method2(param : Int) : Int {
+    @Subscriber(tag = "block_return_String_method", type = Type.BLOCK, threadModel = ThreadModel.MAIN)
+    fun method2(param: String): String {
         Log.d("main", "call tag = 'no_return_method' in Subscriber4 method1")
+        Thread.sleep(10)
         return param
     }
 
-    @Subscriber(tag = "block_return_int_method", type = Type.BLOCK,threadModel = ThreadModel.POST)
-    fun method3(param:EventParam) : String {
-        Log.d("main","Subscriber4 ")
-        return param.p1
+    @Subscriber(tag = "block_return_param_method", type = Type.BLOCK, threadModel = ThreadModel.POST)
+    fun method3(param: EventParam): EventParam {
+        Log.d("main", "Subscriber4 ")
+        Thread.sleep(10)
+        return param
     }
-
-
-
-
 }
 
 class Subscriber5 {
+    var receivedMsg: String = ""
     @Subscriber(tag = "no_return_method", threadModel = ThreadModel.POST)
-    fun method1() {
+    fun method1(param: String) {
         Log.d("main", "call tag = 'no_return_method' in Subscriber5 method1")
+        Thread.sleep(10)
+        receivedMsg = param
+    }
+
+    @Subscriber(tag = "block_return_String_method", type = Type.BLOCK, threadModel = ThreadModel.MAIN)
+    fun method2(param: String): String {
+        Log.d("main", "call tag = 'no_return_method' in Subscriber4 method1")
+        Thread.sleep(10)
+        return param
+    }
+
+    @Subscriber(tag = "block_return_param_method", type = Type.BLOCK, threadModel = ThreadModel.POST)
+    fun method3(param: EventParam): EventParam {
+        Log.d("main", "Subscriber4 ")
+        Thread.sleep(10)
+        return param
     }
 }
 
 class Subscriber6 {
+    var receivedMsg : String = ""
     @Subscriber(tag = "no_return_method", threadModel = ThreadModel.POOL)
-    fun method1() {
+    fun method1(param: String) {
         Log.d("main", "call tag = 'no_return_method' in Subscriber6 method1")
+        Thread.sleep(10)
+        receivedMsg = param
+    }
+
+    @Subscriber(tag = "block_return_String_method", type = Type.BLOCK, threadModel = ThreadModel.MAIN)
+    fun method2(param: String): String {
+        Log.d("main", "call tag = 'no_return_method' in Subscriber4 method1")
+        Thread.sleep(10)
+        return param
+    }
+
+    @Subscriber(tag = "block_return_param_method", type = Type.BLOCK, threadModel = ThreadModel.POST)
+    fun method3(param: EventParam): EventParam {
+        Log.d("main", "Subscriber4 ")
+        Thread.sleep(10)
+        return param
     }
 }
 
