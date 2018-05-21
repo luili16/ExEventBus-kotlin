@@ -132,17 +132,12 @@ class Service3 : Service() {
 
     private lateinit var debug: Debug
     private val subscriber3 = Subscriber3()
-    private val subscriber4 = Subscriber4()
-    private val subscriber5 = Subscriber5()
-    private val subscriber6 = Subscriber6()
+
 
     override fun onCreate() {
         super.onCreate()
         ExEventBus.init(this)
         ExEventBus.register(subscriber3)
-        ExEventBus.register(subscriber4)
-        ExEventBus.register(subscriber5)
-        ExEventBus.register(subscriber6)
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -161,13 +156,7 @@ class Service3 : Service() {
         }
 
         override fun receivedMsg(num: Int): String {
-            return when (num) {
-                3 -> subscriber3.receivedMsg
-                4 -> subscriber4.receivedMsg
-                5 -> subscriber5.receivedMsg
-                6 -> subscriber6.receivedMsg
-                else -> ""
-            }
+            return subscriber3.receivedMsg
         }
 
         override fun thisPid(): Int {
@@ -179,18 +168,15 @@ class Service3 : Service() {
 class Service4 : Service() {
 
     private lateinit var debug: Debug
-    private val subscriber3 = Subscriber3()
+
     private val subscriber4 = Subscriber4()
-    private val subscriber5 = Subscriber5()
-    private val subscriber6 = Subscriber6()
+
 
     override fun onCreate() {
         super.onCreate()
         ExEventBus.init(this)
-        ExEventBus.register(subscriber3)
         ExEventBus.register(subscriber4)
-        ExEventBus.register(subscriber5)
-        ExEventBus.register(subscriber6)
+
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -209,13 +195,7 @@ class Service4 : Service() {
         }
 
         override fun receivedMsg(num: Int): String {
-            return when (num) {
-                3 -> subscriber3.receivedMsg
-                4 -> subscriber4.receivedMsg
-                5 -> subscriber5.receivedMsg
-                6 -> subscriber6.receivedMsg
-                else -> ""
-            }
+            return  subscriber4.receivedMsg
         }
 
         override fun thisPid(): Int {
@@ -227,18 +207,15 @@ class Service4 : Service() {
 class Service5 : Service() {
 
     private lateinit var debug: Debug
-    private val subscriber3 = Subscriber3()
-    private val subscriber4 = Subscriber4()
     private val subscriber5 = Subscriber5()
-    private val subscriber6 = Subscriber6()
+
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("main","Service5 onCreate!")
         ExEventBus.init(this)
-        ExEventBus.register(subscriber3)
-        ExEventBus.register(subscriber4)
         ExEventBus.register(subscriber5)
-        ExEventBus.register(subscriber6)
+
     }
 
     override fun onBind(intent: Intent?): IBinder {
@@ -257,13 +234,7 @@ class Service5 : Service() {
         }
 
         override fun receivedMsg(num: Int): String {
-            return when (num) {
-                3 -> subscriber3.receivedMsg
-                4 -> subscriber4.receivedMsg
-                5 -> subscriber5.receivedMsg
-                6 -> subscriber6.receivedMsg
-                else -> ""
-            }
+            return subscriber5.receivedMsg
         }
 
         override fun thisPid(): Int {
@@ -275,17 +246,12 @@ class Service5 : Service() {
 class Service6 : Service() {
 
     private lateinit var debug: Debug
-    private val subscriber3 = Subscriber3()
-    private val subscriber4 = Subscriber4()
-    private val subscriber5 = Subscriber5()
     private val subscriber6 = Subscriber6()
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("main","Service6 onCreate!")
         ExEventBus.init(this)
-        ExEventBus.register(subscriber3)
-        ExEventBus.register(subscriber4)
-        ExEventBus.register(subscriber5)
         ExEventBus.register(subscriber6)
     }
 
@@ -305,13 +271,7 @@ class Service6 : Service() {
         }
 
         override fun receivedMsg(num: Int): String {
-            return when (num) {
-                3 -> subscriber3.receivedMsg
-                4 -> subscriber4.receivedMsg
-                5 -> subscriber5.receivedMsg
-                6 -> subscriber6.receivedMsg
-                else -> ""
-            }
+            return subscriber6.receivedMsg
         }
 
         override fun thisPid(): Int {
