@@ -125,7 +125,7 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
      *  Service xxx.xxx.xxx has leaked ServiceConnection的异常
      */
     fun clearUp() {
-       transport.destroy()
+        transport.destroy()
     }
 
     /**
@@ -137,6 +137,29 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
      * @throws TimeoutException 超时
      */
     internal fun post(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
+
+        val paramType: String = if (eventObj == null) {
+            "kotlin.Unit"
+        } else {
+            eventObj::class.qualifiedName
+                    ?: throw IllegalArgumentException("invalid eventObj($eventObj)")
+        }
+
+        val addressList = preparePost(timeout, paramType, tag, returnType) ?: return null
+
+        return if (returnType == Unit::class.qualifiedName) {
+            addressList.forEach {
+                post(it, eventObj, tag, returnType, timeout)
+            }
+            null
+        } else {
+            val address = addressList[0]
+            post(address, eventObj, tag, returnType, timeout)
+        }
+    }
+
+    private fun preparePost(timeout: Long, paramType: String, tag: String, returnType: String): ArrayList<String>? {
+
         val aliveClients = transport.aliveClient
         if (aliveClients.isEmpty()) {
             Log.e(TAG, "Poster : no available client")
@@ -163,12 +186,6 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
         } catch (e: InterruptedException) {
             Log.e(TAG, "unExcepted interrupt when query value")
         }
-        val paramType: String = if (eventObj == null) {
-            "kotlin.Unit"
-        } else {
-            eventObj::class.qualifiedName
-                    ?: throw IllegalArgumentException("invalid eventObj($eventObj)")
-        }
 
         val event = Event(paramType = paramType, tag = tag, returnType = returnType, remote = true)
         val eventListHolder = subscribeEventListSnapshot[id]
@@ -186,16 +203,17 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
             return null
         }
         subscribeEventListSnapshot.remove(id)
+        return addressList
+    }
 
-        return if (returnType == Unit::class.qualifiedName) {
-            addressList.forEach {
-                post(it, eventObj, tag, returnType, timeout)
-            }
-            null
-        } else {
-            val address = addressList[0]
-            post(address, eventObj, tag, returnType, timeout)
+
+    fun pingRemote(tag: String, returnType: String, paramType: String): Boolean {
+
+        val addressList = preparePost(2000,paramType,tag,returnType)
+        if (addressList == null || addressList.isEmpty()) {
+            return false
         }
+        return true
     }
 
     private fun getAddressOf(event: Event, eventsMap: ConcurrentHashMap<String, ArrayList<Event>>): ArrayList<String> {
@@ -283,7 +301,7 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
             is ByteArray -> message.putByteArray(key, value)
             is Char -> message.putChar(key, value)
             is CharArray -> message.putCharArray(key, value)
-            //is CharSequence -> message.putCharSequence(key, value)
+        //is CharSequence -> message.putCharSequence(key, value)
             is Int -> message.putInt(key, value)
             is IntArray -> message.putIntArray(key, value)
             is Long -> message.putLong(key, value)

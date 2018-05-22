@@ -138,6 +138,7 @@ internal class EventBus {
      */
     fun queryRemote(): ArrayList<Event> {
         val eventList = ArrayList<Event>()
+        Log.d("main","queryRemote : $subscribedMap")
         subscribedMap.forEach {
             if (it.key.remote) {
                 eventList.add(it.key)

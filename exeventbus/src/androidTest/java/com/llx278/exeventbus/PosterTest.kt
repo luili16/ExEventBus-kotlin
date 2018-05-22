@@ -57,11 +57,11 @@ class PosterTest {
     @Test
     fun paramIntTest() {
         val tag = "parameter_test_Int"
-        val param : Int = 5000
+        val param: Int = 5000
         val returnType = Int::class.qualifiedName ?: "kotlin.Unit"
         val retVal = poster.post(eventObj = param, tag = tag, returnType = returnType, timeout = 5000)
         assertTrue(retVal is Int)
-        assertEquals(param,retVal)
+        assertEquals(param, retVal)
     }
 
     @Test
@@ -72,76 +72,76 @@ class PosterTest {
             seed++
         }
         val returnType = IntArray::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,returnType,5000)
+        val retVal = poster.post(param, tag, returnType, 5000)
         assertTrue(retVal is IntArray)
-        assertArrayEquals(param,retVal as IntArray)
+        assertArrayEquals(param, retVal as IntArray)
     }
 
     @Test
     fun paramByteTest() {
         val tag = "parameter_test_Byte"
-        val param : Byte = 44
+        val param: Byte = 44
         val returnType = Byte::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,returnType,5000)
+        val retVal = poster.post(param, tag, returnType, 5000)
         assertTrue(retVal is Byte)
-        assertEquals(param,retVal as Byte)
+        assertEquals(param, retVal as Byte)
     }
 
     @Test
     fun paramByteArrayTest() {
         val tag = "parameter_test_ByteArray"
-        var seedByte : Byte = 44
-        val param = ByteArray(5){
+        var seedByte: Byte = 44
+        val param = ByteArray(5) {
             seedByte++
         }
         val returnType = ByteArray::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,returnType,5000)
+        val retVal = poster.post(param, tag, returnType, 5000)
         assertTrue(retVal is ByteArray)
-        assertArrayEquals(param,retVal as ByteArray)
+        assertArrayEquals(param, retVal as ByteArray)
     }
 
     @Test
     fun paramCharTest() {
         val tag = "parameter_test_Char"
-        val param : Char = 'h'
+        val param: Char = 'h'
         val returnType = Char::class.qualifiedName ?: "kotlin.Unit"
-        val returnVal = poster.post(param,tag,returnType,5000)
+        val returnVal = poster.post(param, tag, returnType, 5000)
         assertTrue(returnVal is Char)
-        assertEquals(param,returnVal as Char)
+        assertEquals(param, returnVal as Char)
     }
 
     @Test
     fun paramCharArrayTest() {
         val tag = "parameter_test_CharArray"
-        val param : CharArray = CharArray(5) {
+        val param: CharArray = CharArray(5) {
             'm' + it
         }
         val returnType = CharArray::class.qualifiedName ?: "kotlin.Unit"
-        val returnVal = poster.post(param,tag,returnType,5000)
+        val returnVal = poster.post(param, tag, returnType, 5000)
         assertTrue(returnVal is CharArray)
-        assertArrayEquals(param,returnVal as CharArray)
+        assertArrayEquals(param, returnVal as CharArray)
     }
 
     @Test
     fun paramLongTest() {
         val tag = "parameter_test_Long"
-        val param : Long = 35099
+        val param: Long = 35099
         val returnType = Long::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,returnType,5000)
+        val retVal = poster.post(param, tag, returnType, 5000)
         assertTrue(retVal is Long)
-        assertEquals(param,retVal as Long)
+        assertEquals(param, retVal as Long)
     }
 
     @Test
     fun paramLongArrayTest() {
         val tag = "parameter_test_LongArray"
         val param = LongArray(7) {
-            78748+ it.toLong()
+            78748 + it.toLong()
         }
         val retType = LongArray::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,retType,5000)
+        val retVal = poster.post(param, tag, retType, 5000)
         assertTrue(retVal is LongArray)
-        assertArrayEquals(param,retVal as LongArray)
+        assertArrayEquals(param, retVal as LongArray)
     }
 
     @Test
@@ -149,9 +149,9 @@ class PosterTest {
         val tag = "parameter_test_String"
         val param = "hello android!"
         val retType = String::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,retType,5000)
+        val retVal = poster.post(param, tag, retType, 5000)
         assertTrue(retVal is String)
-        assertEquals(param,retVal as String)
+        assertEquals(param, retVal as String)
     }
 
     @Test
@@ -161,9 +161,9 @@ class PosterTest {
         val param = EventParam("event", "param")
         val retType = EventParam::class.qualifiedName ?: "kotlin.Unit"
         val retVal = poster.post(param, tag, retType, 1000 * 5)
-        Log.d("main","retVal is ${retVal!!::class.qualifiedName}")
+        Log.d("main", "retVal is ${retVal!!::class.qualifiedName}")
         assertTrue(retVal is EventParam)
-        assertEquals(param.p1,(retVal as EventParam).p1)
+        assertEquals(param.p1, (retVal as EventParam).p1)
         assertEquals(param.p2, retVal.p2)
     }
 
@@ -171,15 +171,15 @@ class PosterTest {
     fun paramArrayHolderTest() {
         val tag = "parameter_tes_ArrayHolder"
         val eventParams = ArrayList<EventParam>()
-        eventParams.add(EventParam("a","b"))
-        eventParams.add(EventParam("c","d"))
-        eventParams.add(EventParam("e","f"))
+        eventParams.add(EventParam("a", "b"))
+        eventParams.add(EventParam("c", "d"))
+        eventParams.add(EventParam("e", "f"))
         val param = ArrayHolder(eventParams)
         val returnType = ArrayHolder::class.qualifiedName ?: "kotlin.Unit"
-        val retVal = poster.post(param,tag,returnType,5000)
+        val retVal = poster.post(param, tag, returnType, 5000)
         assertTrue(retVal is ArrayHolder)
-        assertEquals(param,retVal)
-        Log.d("main","ArrayHolder is $retVal")
+        assertEquals(param, retVal)
+        Log.d("main", "ArrayHolder is $retVal")
     }
     // ------------------------------ (end) -------------------------------------
 }

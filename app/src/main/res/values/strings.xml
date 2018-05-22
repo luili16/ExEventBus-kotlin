@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">ExeventBusDemo</string>
+    <string name="remotepublish">start_service</string>
+    <string name="hello">in this article</string>
+    <string name="stop_service">stop_service</string>
 </resources>

@@ -72,7 +72,14 @@ object ExEventBus {
     }
 
     /**
-     * 仅测试用
+     * 测试是否有某个进程存在指定的事件
+     */
+    fun pingRemote(tag: String, returnType: String, paramType: String): Boolean {
+        return poster.pingRemote(tag, returnType, paramType)
+    }
+
+    /**
+     * 仅测试用,因为正常使用是不会解除远程服务的绑定的，直到进程挂掉(这种情况会系统会抛一个远程服务泄露的异常).
      */
     internal fun internalClear() {
         poster.clearUp()
