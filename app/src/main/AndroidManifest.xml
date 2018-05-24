@@ -18,6 +18,9 @@
             </intent-filter>
         </activity>
         <service android:name=".RemoteService" android:process=":remote"/>
+        <service android:name="com.llx278.exeventbus.remote.RouterService"
+            android:exported="false"
+            android:process=":exeventbus"/>
     </application>
 
 </manifest>

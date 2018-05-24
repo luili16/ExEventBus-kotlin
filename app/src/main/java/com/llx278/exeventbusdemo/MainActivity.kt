@@ -36,7 +36,8 @@ class MainActivity : AppCompatActivity() {
         method2.setOnClickListener {
             val tag = "parameter_test_String"
             val returnType = String::class.qualifiedName!!
-            ExEventBus.remotePublish(tag = tag, returnType = returnType)
+            val retVal = ExEventBus.remotePublish(tag = tag, returnType = returnType,timeout = 1000)
+            Log.d("main","retVal is $retVal")
         }
     }
 

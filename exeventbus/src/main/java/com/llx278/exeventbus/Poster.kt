@@ -126,7 +126,7 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
      *  Service xxx.xxx.xxx has leaked ServiceConnection的异常
      */
     fun clearUp(context: Context) {
-        transport.destroy()
+        transport.destroy(context)
     }
 
     /**

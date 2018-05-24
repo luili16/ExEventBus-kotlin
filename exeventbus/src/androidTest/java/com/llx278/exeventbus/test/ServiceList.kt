@@ -109,7 +109,7 @@ class Service2 : Service() {
     private inner class Debug : IDebug.Stub() {
         override fun sendCmd(cmd: String?) {
             if ("stop" == cmd) {
-                poster.clearUp()
+                poster.clearUp(this@Service2)
             }
         }
 
@@ -148,7 +148,7 @@ class Service3 : Service() {
     private inner class Debug : IDebug.Stub() {
         override fun sendCmd(cmd: String?) {
             if ("stop" == cmd) {
-                ExEventBus.internalClear()
+                ExEventBus.internalClear(this@Service3)
             }
         }
 
@@ -187,7 +187,7 @@ class Service4 : Service() {
     private inner class Debug : IDebug.Stub() {
         override fun sendCmd(cmd: String?) {
             if ("stop" == cmd) {
-                ExEventBus.internalClear()
+                ExEventBus.internalClear(this@Service4)
             }
         }
 
@@ -226,7 +226,7 @@ class Service5 : Service() {
     private inner class Debug : IDebug.Stub() {
         override fun sendCmd(cmd: String?) {
             if ("stop" == cmd) {
-                ExEventBus.internalClear()
+                ExEventBus.internalClear(this@Service5)
             }
         }
 
@@ -263,7 +263,7 @@ class Service6 : Service() {
     private inner class Debug : IDebug.Stub() {
         override fun sendCmd(cmd: String?) {
             if ("stop" == cmd) {
-                ExEventBus.internalClear()
+                ExEventBus.internalClear(this@Service6)
             }
         }
 
