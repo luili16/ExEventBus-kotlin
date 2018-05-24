@@ -22,18 +22,27 @@ class RouterImpl : IRouter.Stub() {
         val isBroadcast = Address.isBroadcast(address)
         if (isBroadcast) {
             receiverMap.forEach {
-                val receiver = it.value
-                receiver.onMessageReceive(where, msg)
+                if (it.key != where) {
+                    val receiver = it.value
+                    receiver.onMessageReceive(where, msg)
+                }
             }
         } else {
-            val receiver = receiverMap[address] ?: throw UnExceptedAddressException("unExceptedAddress : $address")
+            val receiver = receiverMap[address]
+                    ?: throw UnExceptedAddressException("unExceptedAddress : $address")
             receiver.onMessageReceive(where, msg)
         }
     }
 
     override fun addReceiver(receiver: IReceiver) {
-        val where = Address.toAddress(Binder.getCallingPid())
-        receiverMap[where.toString()] = receiver
+        val where = Address.toAddress(Binder.getCallingPid()).toString()
+        val thisAddress = Address.toAddress().toString()
+        if (where == thisAddress) {
+            Log.e("ExEventBus", "add Receiver in same process!")
+            return
+        }
+
+        receiverMap[where] = receiver
     }
 
     override fun removeReceiver() {
@@ -49,12 +58,12 @@ class RouterImpl : IRouter.Stub() {
             val binder = receiver.asBinder()
             var hasRemoved = false
             if (binder == null) {
-                Log.e(TAG,"RouterService : binder is null!")
+                Log.e(TAG, "RouterService : binder is null!")
                 receiverMap.remove(it.key)
                 hasRemoved = true
             }
             if (!binder.pingBinder()) {
-                Log.e(TAG,"RouterService : ping binder return false!")
+                Log.e(TAG, "RouterService : ping binder return false!")
                 receiverMap.remove(it.key)
                 hasRemoved = true
             }
@@ -70,6 +79,9 @@ class RouterImpl : IRouter.Stub() {
 
 /**
  * 此服务用来中转进程与进程间的数据交互
+ *
+ * 注意，此服务只能运行在一个独立的进程中，也就是说在AndroidManifest.xml中这个Service要声明为一个
+ * 独立的进程，如果不这样，则会导致其他的进程无法向此进程发送发送消息，从而导致莫名奇妙的bug。
  */
 class RouterService : Service() {
 

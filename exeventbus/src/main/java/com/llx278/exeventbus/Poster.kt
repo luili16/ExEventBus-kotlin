@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.os.IBinder
 import android.os.Parcelable
+import android.os.Process
 import android.os.RemoteException
 import android.text.TextUtils
 import android.util.Log
@@ -124,7 +125,7 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
      *
      *  Service xxx.xxx.xxx has leaked ServiceConnection的异常
      */
-    fun clearUp() {
+    fun clearUp(context: Context) {
         transport.destroy()
     }
 
@@ -146,6 +147,9 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
         }
 
         val addressList = preparePost(timeout, paramType, tag, returnType) ?: return null
+        if (addressList.isEmpty()) {
+            return null
+        }
 
         return if (returnType == Unit::class.qualifiedName) {
             addressList.forEach {
@@ -186,7 +190,6 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
         } catch (e: InterruptedException) {
             Log.e(TAG, "unExcepted interrupt when query value")
         }
-
         val event = Event(paramType = paramType, tag = tag, returnType = returnType, remote = true)
         val eventListHolder = subscribeEventListSnapshot[id]
         if (eventListHolder == null) {
@@ -198,7 +201,7 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
         val eventsMap = eventListHolder.eventsMap
         val addressList = getAddressOf(event, eventsMap = eventsMap)
         if (addressList.isEmpty()) {
-            Log.e(TAG, "no available event list")
+            Log.e(TAG, "no available event list, current event is $event")
             subscribeEventListSnapshot.remove(id)
             return null
         }
@@ -319,7 +322,7 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
                     message.putStringArrayList(key, value as java.util.ArrayList<String>?)
                 }*/
                 throw IllegalArgumentException("Can't support ArrayList at this time,you should use " +
-                        "an `holder`class to hold ArrayList")
+                        "a `holder`class to hold ArrayList")
             }
             is Parcelable -> message.putParcelable(key, value)
             else -> throw IllegalArgumentException("eventObj(" + value::class.qualifiedName
@@ -428,6 +431,10 @@ internal class Poster(context: Context, private val eventBus: EventBus) : IRecei
 
 private class EventListHolder(val signal: CountDownLatch) {
     val eventsMap: ConcurrentHashMap<String, ArrayList<Event>> = ConcurrentHashMap()
+
+    override fun toString(): String {
+        return eventsMap.toString()
+    }
 }
 
 /**

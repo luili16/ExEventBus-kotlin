@@ -2,6 +2,7 @@ package com.llx278.exeventbusdemo
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.llx278.exeventbus.ExEventBus
@@ -16,6 +17,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val service = Intent(applicationContext, RemoteService::class.java)
+        startService(service)
         //remote_publish.text = getString(R.string.hello)
         remote_publish.setOnClickListener {
             start()
@@ -24,30 +27,49 @@ class MainActivity : AppCompatActivity() {
         remote_stop.setOnClickListener {
             stop1()
         }
+
+        method1.setOnClickListener {
+            val tag = "remote_test"
+            ExEventBus.remotePublish(tag = tag)
+        }
+
+        method2.setOnClickListener {
+            val tag = "parameter_test_String"
+            val returnType = String::class.qualifiedName!!
+            ExEventBus.remotePublish(tag = tag, returnType = returnType)
+        }
     }
 
 
     fun start() {
-        val service = Intent(applicationContext,RemoteService::class.java)
+        val service = Intent(applicationContext, RemoteService::class.java)
         service.putExtra("cmd", CMD_START)
         startService(service)
     }
 
 
     fun stop1() {
-        val service = Intent(applicationContext,RemoteService::class.java)
+        val service = Intent(applicationContext, RemoteService::class.java)
         service.putExtra("cmd", CMD_STOP)
         startService(service)
     }
 
     override fun onResume() {
         super.onResume()
-        ExEventBus.register(this)
+        Thread {
+            val current = SystemClock.uptimeMillis()
+            ExEventBus.register(this)
+            val now = SystemClock.uptimeMillis()
+            val elapsed = now - current
+            Log.d("main", "register time : $elapsed")
+        }.start()
     }
 
     override fun onPause() {
         super.onPause()
-        ExEventBus.unRegister(this)
+        Thread {
+            ExEventBus.unRegister(this)
+        }.start()
     }
 
     /**
@@ -121,6 +143,10 @@ class MainActivity : AppCompatActivity() {
         return param
     }
 
+    /**
+     * 这么做是为了模拟传送一个ArrayList，因为一些原因，没有实现直接发送ArrayList类型
+     * 但可以这样间接的传送ArrayList
+     */
     @Subscriber(tag = "parameter_tes_ArrayHolder", remote = true, type = Type.BLOCK)
     fun eventMethod14(param: ArrayListHolder): ArrayListHolder {
         Log.d("main", "Subscriber2 : eventMethod14 param is $param")

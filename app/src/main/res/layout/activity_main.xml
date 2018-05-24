@@ -23,4 +23,17 @@
         android:id="@+id/remote_stop"
         />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/call_remote_method1"
+        android:id="@+id/method1"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/call_remote_method2"
+        android:id="@+id/method2"
+        />
+
 </LinearLayout>

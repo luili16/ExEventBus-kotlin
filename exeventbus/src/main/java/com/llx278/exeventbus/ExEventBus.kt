@@ -60,14 +60,14 @@ object ExEventBus {
     /**
      * 将此订阅事件发布到其他进程里面去，忽略返回值
      */
-    fun remotePublish(eventObj: Any?, tag: String, timeout: Long = 2000) {
+    fun remotePublish(eventObj: Any? = null, tag: String, timeout: Long = 2000) {
         poster.post(eventObj, tag, "kotlin.Unit", timeout)
     }
 
     /**
      * 将此订阅事件发送到其他进程里面去，等待返回值
      */
-    fun remotePublish(eventObj: Any?, tag: String, returnType: String, timeout: Long): Any? {
+    fun remotePublish(eventObj: Any? = null, tag: String, returnType: String, timeout: Long = 2000): Any? {
         return poster.post(eventObj, tag, returnType, timeout)
     }
 

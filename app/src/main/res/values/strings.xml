@@ -3,4 +3,6 @@
     <string name="remotepublish">start_service</string>
     <string name="hello">in this article</string>
     <string name="stop_service">stop_service</string>
+    <string name="call_remote_method1">call_remote_method1</string>
+    <string name="call_remote_method2">call_remote_method2</string>
 </resources>

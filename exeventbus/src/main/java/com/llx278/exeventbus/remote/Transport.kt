@@ -12,7 +12,7 @@ import android.util.Log
 
 private const val TAG = "ExEventBus"
 
-class Transport(val context: Context) : IRouter {
+class Transport(context: Context) : IRouter {
 
     var router: IRouter? = null
     val receiver: ReceiverImpl = ReceiverImpl()
@@ -30,7 +30,7 @@ class Transport(val context: Context) : IRouter {
         }
     }
 
-    fun destroy() {
+    fun destroy(context: Context) {
         if (router != null) {
             router!!.removeReceiver()
         }
@@ -54,7 +54,7 @@ class Transport(val context: Context) : IRouter {
         if (router != null) {
             return router!!.aliveClient
         }
-        return ArrayList<String>()
+        return ArrayList()
     }
 
     override fun asBinder(): IBinder {
