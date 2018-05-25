@@ -150,6 +150,27 @@ class Subscriber2 {
         Log.d("main", "Subscriber2 : eventMethod14 param is $param")
         return param
     }
+
+    /**
+     * 此方法会抛出异常
+     */
+    @Subscriber(tag = "parameter_exception_test", remote = true, type = Type.BLOCK)
+    fun eventMethod15() {
+        val a = 1
+        val b = 0
+
+        val c = a / b
+    }
+
+    @Subscriber(tag = "exception_timeout_test", remote = true, type = Type.BLOCK)
+    fun eventMethod16() : String {
+        val a = 1
+        val b = 0
+
+        val c = a / b
+
+        return "^_^"
+    }
 }
 
 class Subscriber3 {

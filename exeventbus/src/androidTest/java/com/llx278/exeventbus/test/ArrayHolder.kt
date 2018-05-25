@@ -3,7 +3,7 @@ package com.llx278.exeventbus.test
 import android.os.Parcel
 import android.os.Parcelable
 
-data class ArrayHolder(val array: ArrayList<EventParam>) : Parcelable {
+data class ArrayHolder(private val array: ArrayList<EventParam>) : Parcelable {
     constructor(source: Parcel) : this(
             source.createTypedArrayList(EventParam.CREATOR)
     )

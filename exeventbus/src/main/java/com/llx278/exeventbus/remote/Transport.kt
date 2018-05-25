@@ -17,17 +17,20 @@ class Transport(context: Context) : IRouter {
     var router: IRouter? = null
     val receiver: ReceiverImpl = ReceiverImpl()
     lateinit var outReceiver: IReceiver
-    private val conn : RouterConnection = RouterConnection()
+    private val conn: RouterConnection = RouterConnection()
 
     init {
         val routerIntent = Intent(context, RouterService::class.java)
-        context.bindService(routerIntent,conn, Context.BIND_AUTO_CREATE)
+        context.bindService(routerIntent, conn, Context.BIND_AUTO_CREATE)
     }
 
     override fun send(addrss: String?, msg: Bundle?) {
-        if (router != null) {
-            router!!.send(addrss, msg)
+        if (router == null) {
+            Log.e(TAG, "disconnected from RouterService!")
+            return
         }
+
+        router!!.send(addrss, msg)
     }
 
     fun destroy(context: Context) {
@@ -35,26 +38,32 @@ class Transport(context: Context) : IRouter {
             router!!.removeReceiver()
         }
         context.unbindService(conn)
-        Log.i(TAG,"Transport : have disconnect with RouteService and current process is ${Process.myPid()}")
+        Log.i(TAG, "Transport : have disconnect with RouteService and current process is ${Process.myPid()}")
     }
 
     override fun addReceiver(receiver: IReceiver?) {
-        if (receiver != null) {
-            outReceiver = receiver
+        if (receiver == null) {
+            Log.e(TAG, "passing an empty receiver when call addReceiver(IReceiver) method")
+            return
         }
+        outReceiver = receiver
     }
 
     override fun removeReceiver() {
-        if (router != null) {
-            router!!.removeReceiver()
+        if (router == null) {
+            Log.e(TAG, "disconnected from RouterService")
+            return
         }
+
+        router!!.removeReceiver()
     }
 
     override fun getAliveClient(): MutableList<String> {
-        if (router != null) {
-            return router!!.aliveClient
+        if (router == null) {
+            Log.e(TAG, "disconnected from RouterService")
+            return ArrayList()
         }
-        return ArrayList()
+        return router!!.aliveClient
     }
 
     override fun asBinder(): IBinder {

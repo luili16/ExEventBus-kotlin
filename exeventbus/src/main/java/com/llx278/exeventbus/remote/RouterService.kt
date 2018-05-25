@@ -2,10 +2,7 @@ package com.llx278.exeventbus.remote
 
 import android.app.Service
 import android.content.Intent
-import android.os.Binder
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcelable
+import android.os.*
 import android.util.Log
 import com.llx278.exeventbus.Event
 import java.io.Serializable
@@ -22,15 +19,29 @@ class RouterImpl : IRouter.Stub() {
         val isBroadcast = Address.isBroadcast(address)
         if (isBroadcast) {
             receiverMap.forEach {
+                // 不会包括主动发起广播的那个进程
                 if (it.key != where) {
                     val receiver = it.value
-                    receiver.onMessageReceive(where, msg)
+                    try {
+                        receiver.onMessageReceive(where, msg)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "RouterImpl execute receiver.onMessageReceive(where,msg) failed " +
+                                "when broadcast message", e)
+                    }
                 }
             }
         } else {
             val receiver = receiverMap[address]
-                    ?: throw UnExceptedAddressException("unExceptedAddress : $address")
-            receiver.onMessageReceive(where, msg)
+            if (receiver == null) {
+                Log.e(TAG, "unExceptedAddress : $address")
+                return
+            }
+
+            try {
+                receiver.onMessageReceive(where, msg)
+            } catch (e: Exception) {
+                Log.e(TAG, "RouterImpl execute receiver.onMessageReceive(where,msg) failed!", e)
+            }
         }
     }
 
@@ -91,5 +102,3 @@ class RouterService : Service() {
         return router
     }
 }
-
-class UnExceptedAddressException(message: String?) : Exception(message)

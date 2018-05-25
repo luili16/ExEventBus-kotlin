@@ -42,14 +42,13 @@ class PosterTest {
     @After
     fun after() {
         debug.sendCmd("stop")
-        poster.clearUp()
+        poster.clearUp(context)
     }
 
     // ------------------------------ 对传入的参数和返回值进行测试 -------------------------------------
 
     @Test
     fun paramUnitTest() {
-        Thread.sleep(2000)
         val tag = "parameter_test"
         poster.post(eventObj = null, tag = tag, returnType = "kotlin.Unit", timeout = 5000)
     }
@@ -182,4 +181,18 @@ class PosterTest {
         Log.d("main", "ArrayHolder is $retVal")
     }
     // ------------------------------ (end) -------------------------------------
+
+    /**
+     * 测试调用的远程方法发生异常时候的现象
+     *
+     * 因为异常是发生在订阅事件的进程，那么就对发布事件的进程没有影响。那么，如果returnType不是kotlin.Unit的话
+     * 那么因为订阅事件的进程的崩溃，则会导致发布事件的进程抛出超时异常
+     */
+    @Test(expected = TimeoutException::class)
+    fun exceptionTest() {
+
+        val tag = "exception_timeout_test"
+        poster.post(eventObj = null, tag = tag, returnType = String::class.qualifiedName!!, timeout = 5000)
+    }
+
 }
