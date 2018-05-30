@@ -2,6 +2,8 @@
 
 ExEventBus是一个轻量级的事件总线，但是它不仅可以在进程内发布，更可以将事件发布到其它进程去。  
 
+发现了一个功能相似的项目(果然还是大厂的项目质量高): [Andromeda](https://github.com/iqiyi/Andromeda)
+
 ## 如何使用
 
 添加一个转发消息的service
